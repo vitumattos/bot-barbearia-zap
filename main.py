@@ -84,7 +84,7 @@ def bot():
         campo_de_texto.click()
         sleep(1)
 
-        resposta = requests.get('http://localhost/BotBarbeariaZap/index2.php?',
+        resposta = requests.get('http://localhost/BotBarbeariaZap/index.php?',
                                 params={'msg': cliente_msg, 'contato': cliente_contato, 'usuario': USER}, headers=agent)
         resposta = resposta.text
         print(resposta)
