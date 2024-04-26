@@ -17,7 +17,7 @@ class ConexaoMySQL{
     }
     // *********************** METODOS DE CADASTROS *********************** //
     // ===== CADASTRAR CLIENTE NOVO ===== //
-    public function cadastroCliente($telefone,$nome,$status,$data_cadastro,$opcao1,$opcao2,$ultimo_corte,$QTD_corte,$sequencia){
+    public function cadastroCliente($telefone,$nome,$status,$data_cadastro,$opcao1,$opcao2,$sequencia){
         //  VERIFICA SE O TELEFONE EXISTE NO BANCO
         $existe = $this->consultaTelefone($telefone);
         // TELEFONE JÁ EXISTE
@@ -25,14 +25,14 @@ class ConexaoMySQL{
             return false;
         // TELEFONE NÃO EXISTE  
         }else{
-            $cmd = "INSERT INTO cliente (telefone,nome,status,data_cadastro,opcao1,opcao2,ultimo_corte,QTD_corte,sequencia) VALUE ('$telefone','$nome','$status','$data_cadastro','$opcao1','$opcao2','$ultimo_corte','$QTD_corte','$sequencia')";
+            $cmd = "INSERT INTO cliente (telefone,nome,status,data_cadastro,opcao1,opcao2,sequencia) VALUE ('$telefone','$nome','$status','$data_cadastro','$opcao1','$opcao2','$sequencia')";
             $query = mysqli_query($this->conn, $cmd);
             return true;
         }
     }
     // ===== REGISTRA CONVERSA ===== //
     public function registraConversa($telefone,$msg_cliente,$msg_bot,$dia,$hora){
-        $cmd = "INSERT INTO historico (telefone, msg_cliente,msg_bot,dia,hora) VALUES ('$telefone','$msg_cliente','$msg_bot','$dia','$hora')";
+        $cmd = "INSERT INTO historico_conversa (telefone, msg_cliente,msg_bot,dia,hora) VALUES ('$telefone','$msg_cliente','$msg_bot','$dia','$hora')";
         $query = mysqli_query($this->conn, $cmd);
     }
 
@@ -44,10 +44,10 @@ class ConexaoMySQL{
         $total = mysqli_num_rows($query);
         // TELEFONE JÁ EXISTE
         if($total > 0){ 
-            return false;
+            return true;
         // TELEFONE NÃO EXISTE  
         }else{
-            return true;
+            return false;
         }
     }
     // ===== CONSULTA STATUS ===== //
@@ -96,9 +96,9 @@ class ConexaoMySQL{
     }
 
 // *********************** METODOS DE ATULIZAÇÃO *********************** //
-    // ===== CONSULTA NOME ===== //  
+    // ===== ATUALIZA NOME ===== //  
     public function atualizaNome($telefone,$nome,$status){
-        $cmd = "UPDATE usuario SET nome = '$nome', status = $status  WHERE telefone = '$telefone'";
+        $cmd = "UPDATE cliente SET nome = '$nome', status = $status  WHERE telefone = '$telefone'";
         $query = mysqli_query($this->conn,$cmd);
         if ($query) {
             return true; // Atualização bem-sucedida
@@ -106,9 +106,9 @@ class ConexaoMySQL{
             return false; // Falha na atualização
         }
     }
-    // ===== CONSULTA STATUS ===== //  
+    // ===== ATUALIZA STATUS ===== //  
     public function atualizaStatus($telefone,$status){
-        $cmd = "UPDATE usuario SET status = $status  WHERE telefone = '$telefone'";
+        $cmd = "UPDATE cliente SET status = $status  WHERE telefone = '$telefone'";
         $query = mysqli_query($this->conn,$cmd);
         if ($query) {
             return true; // Atualização bem-sucedida
@@ -116,9 +116,9 @@ class ConexaoMySQL{
             return false; // Falha na atualização
         }
     }
-    // ===== CONSULTA OPÇAO1 ===== //  
+    // ===== ATUALIZA OPÇAO1 ===== //  
     public function atualizaOpcao1($telefone,$opcao1){
-        $cmd = "UPDATE usuario SET status = $opcao1  WHERE telefone = '$telefone'";
+        $cmd = "UPDATE cliente SET opcao1 = $opcao1  WHERE telefone = '$telefone'";
         $query = mysqli_query($this->conn,$cmd);
         if ($query) {
             return true; // Atualização bem-sucedida
@@ -126,9 +126,9 @@ class ConexaoMySQL{
             return false; // Falha na atualização
         }
     }
-    // ===== CONSULTA SEQUENCIA ===== //  
+    // ===== ATUALIZA SEQUENCIA ===== //  
     public function atualizaSequencia($telefone,$sequencia){
-        $cmd = "UPDATE usuario SET status = $sequencia  WHERE telefone = '$telefone'";
+        $cmd = "UPDATE cliente SET sequencia = $sequencia  WHERE telefone = '$telefone'";
         $query = mysqli_query($this->conn,$cmd);
         if ($query) {
             return true; // Atualização bem-sucedida

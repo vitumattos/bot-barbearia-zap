@@ -15,7 +15,9 @@
 - [x] Armazenar as converças em um banco de dados
 - [x] Separar o menu com os scripts/respostas em um arquivo separa php
 - [x] Separa os comandos sql em outro arquivo.php para deixar o código mais limpo
-- [ ] Reescrever o aquivo.php de forma mais organizada utilizando boas praticas
-- [ ] Fazer o path de ver tabela de preço ->
-  - [ ] Tabela de preço como mensagem comum, porém organizadas.
-  - [ ] Imagem costumizada enviada com os preços
+- [x] Reescrever o aquivo.php de forma mais organizada utilizando boas praticas
+- [x] Refazer a tabla cliente e criar outra tabela de historico de cortes
+- [x] Fazer o path de ver tabela de preço
+- [ ] Fazer o path e criar a lógica para adicionar o cliente na fila
+- [ ] Fazer o path de consultar a fila 
+- [ ] Adicionar o tempo para cada corte
