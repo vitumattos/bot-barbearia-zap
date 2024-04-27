@@ -35,6 +35,11 @@ class ConexaoMySQL{
         $cmd = "INSERT INTO historico_conversa (telefone, msg_cliente,msg_bot,dia,hora) VALUES ('$telefone','$msg_cliente','$msg_bot','$dia','$hora')";
         $query = mysqli_query($this->conn, $cmd);
     }
+    // ===== REGISTRA NA FILA ===== //
+    public function cadastraFila($telefone,$posicao,$hora){
+        $cmd = "INSERT INTO fila (telefone, posicao, hora) VALUE ('$telefone','$posicao','$hora')";
+        $query = mysqli_query($this->conn, $cmd);
+    }
 
 // *********************** METODOS DE CONSULTA *********************** //
     // ===== CONSULTA TELEFONE ===== //
@@ -94,6 +99,19 @@ class ConexaoMySQL{
         }
         return $sequencia;
     }
+
+    public function consultaFila(){
+        $cmd = "SELECT * FROM fila";
+        $query = mysqli_query($this->conn,$cmd);
+
+        if(mysqli_num_rows($query)>0){
+
+            return "O tamanho da fila é: " . mysqli_num_rows($query). "\nDigite 1 e garanta sua vaga";
+            
+        }else {
+            return "O tamanho da fila é: " . mysqli_num_rows($query). "\nDigite 1 e venha correndo...";
+    }
+}
 
 // *********************** METODOS DE ATULIZAÇÃO *********************** //
     // ===== ATUALIZA NOME ===== //  
