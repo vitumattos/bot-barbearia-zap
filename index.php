@@ -12,69 +12,82 @@
         date_default_timezone_set('America/Sao_Paulo');   
         $dia =  date('d-m-Y', time());
         $hora = date('H:i:s', time());
-        $cliente_contato = $_GET['contato'];
-        $cliente_msg = $_GET['msg'];
+        $telefone = $_GET['contato'];
+        $msg = $_GET['msg'];
         $USER = $_GET['usuario'];
 
     // CLIENTE CADASTRADO
-    if($u->consultaTelefone($cliente_contato)){
-        $situacao = $u->consultaStatus($cliente_contato);
-        $nome = $u->consultaNome($cliente_contato);
-        $opcao1 = $cliente_msg;
+    if($u->consultaTelefone($telefone)){
+        $nome = $u->consultaNome($telefone);
+        $status = $u->consultaStatus($telefone);
+        $opcao = $u->consultaOpcao($telefone);
+        $fila = $u->consultaFila();
 
-        if($situacao == '1'){ //cadastra o nome do cliente 
-            $nome = $cliente_msg; 
-            $u->atualizaNome($cliente_contato,$nome,'2');
-            $resposta = "É uma prazer falar com você $nome.\n $menu1";
-            // ===== PRIMEIRO MENU ===== //
-        }elseif($situacao == '2'){
-            $opcao1=$cliente_msg;
-            if($opcao1 <='3' and $opcao1 > '0'){
-                $u->atualizaOpcao1($cliente_contato,$opcao1);
-                switch($opcao1){
-                    case '1':
-                        $u->atualizaStatus($cliente_contato,'3');
-                        $resposta = "Tudo Joia, ".$nome;
-                        $opcao1 = $cliente_msg;
-                        break;
-                    case '2':
-                        $resposta = $u->consultaFila();
-                        break;
-                    case '3':
-                        $resposta = $tabela_preco."\nDigite 1 e garanta sua vaga";
-                        $u->atualizaStatus($cliente_contato,'3');
-                        break;
-                    default:
-                        $resposta = "Não entendi $nome, pode repetir uma das opções acima";
-                        $u->registraConversa($cliente_contato,$cliente_msg,$resposta,$dia,$hora);
-                }
-                        
+        if($status == "1"){
+            $nome = $msg;
+            $u->atualizaNome($telefone,$nome,"3");
+
+            $resposta = "É uma prazer falar com você $nome.\n$menu";
+            $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);  
+        }elseif($status == "2"){
+            $u->atualizaStatus($telefone,'3');
+            
+            $resposta = "Bem vindo, $nome.\n$menu";
+            $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);
+        }elseif($status == "3"){
+            $opcao = $msg;
+            try{
+                $u->atualizaOpcao($telefone,$opcao);
+            }catch (Exception $e){
+                $u->atualizaOpcao($telefone,'0');
             }
-        }elseif($situacao == '3' and $opcao1 == '1'){
-            $resposta = $informacao;
-            $opcao1 = $cliente_msg;
-            $u->atualizaOpcao1($cliente_contato,$opcao1);
-            $u->atualizaStatus($cliente_contato,'4');
 
-        }elseif($situacao == '4' and $opcao1 == '1'){
-            $resposta = $u->consultaFila();
-            $u->atualizaOpcao1($cliente_contato,$opcao1);
-            $u->atualizaStatus($cliente_contato,'5');
-
-        }elseif($situacao == '5' and $opcao1 =='1'){
-            $resposta = $entrou;
-            $u->cadastraFila($cliente_contato,'',$hora);
-        }else{
-            $resposta = "Não entendi $nome, poderia usar os índices acima";
+            switch($opcao){
+                case "1":
+                    $u->atualizaStatus($telefone,'4');
+                    $resposta = $nome. " ".$info."\n".$fila. "\n". $confirmacao;
+                    $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);
+                    break;
+                
+                case "2":
+                    $resposta = $fila;
+                    $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);
+                    break;
+                
+                case "3":
+                    $resposta = $tabela_preco;
+                    $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);
+                    break;
+                default:
+                $resposta = "$nome, poderia usar os índices das opções abaixo.\n".$menu;
+                $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);
+                }
+        }elseif($status == "4"){
+            $opcao = $msg;
+            if($opcao == "1"){
+                $resposta = $entrou;
+                $u->atualizaStatus($telefone,"5");
+                $u->cadastraFila($telefone,$nome,$hora);
+            }elseif($opcao == "2"){
+                $resposta = "Obrigado! Encerramos nossa conversa aqui";
+                $u->atualizaStatus($telefone,"2");
+                $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);
+            }else{
+                $resposta = "Não entendi, poderia usar os índices.\n". $confirmacao;
+                $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);
+            }
+        }elseif($status == "5"){
+            $resposta = "Você já está na fila.";
         }
-                    
+        
+                 
 
     // PRIMEIRA VEZ DO CLIENTE
     }else{
-        $resposta = $saudação;
-        $u->cadastroCliente($cliente_contato,'','1',$dia.' '.$hora,'','','');
-        $u->registraConversa($cliente_contato,$cliente_msg,$resposta,$dia,$hora);
-
+        $u->cadastroCliente($telefone,'Cliente','1',$dia.' '.$hora,'');
+        
+        $resposta = $saudacao.$primerira_interacao;
+        $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);
     }
     echo $resposta
 

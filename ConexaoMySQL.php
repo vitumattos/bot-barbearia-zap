@@ -16,19 +16,12 @@ class ConexaoMySQL{
         
     }
     // *********************** METODOS DE CADASTROS *********************** //
-    // ===== CADASTRAR CLIENTE NOVO ===== //
-    public function cadastroCliente($telefone,$nome,$status,$data_cadastro,$opcao1,$opcao2,$sequencia){
-        //  VERIFICA SE O TELEFONE EXISTE NO BANCO
-        $existe = $this->consultaTelefone($telefone);
-        // TELEFONE JÁ EXISTE
-        if($existe){ 
-            return false;
-        // TELEFONE NÃO EXISTE  
-        }else{
-            $cmd = "INSERT INTO cliente (telefone,nome,status,data_cadastro,opcao1,opcao2,sequencia) VALUE ('$telefone','$nome','$status','$data_cadastro','$opcao1','$opcao2','$sequencia')";
-            $query = mysqli_query($this->conn, $cmd);
-            return true;
-        }
+    // ===== REGISTRAR CLIENTE NOVO ===== //
+    public function cadastroCliente($telefone,$nome,$status,$data_cadastro,$opcao){
+       
+        $cmd = "INSERT INTO cliente (telefone,nome,status,data_cadastro,opcao) VALUE ('$telefone','$nome','$status','$data_cadastro','$opcao')";
+        $query = mysqli_query($this->conn, $cmd);
+
     }
     // ===== REGISTRA CONVERSA ===== //
     public function registraConversa($telefone,$msg_cliente,$msg_bot,$dia,$hora){
@@ -36,8 +29,8 @@ class ConexaoMySQL{
         $query = mysqli_query($this->conn, $cmd);
     }
     // ===== REGISTRA NA FILA ===== //
-    public function cadastraFila($telefone,$posicao,$hora){
-        $cmd = "INSERT INTO fila (telefone, posicao, hora) VALUE ('$telefone','$posicao','$hora')";
+    public function cadastraFila($telefone,$nome,$hora){
+        $cmd = "INSERT INTO fila (telefone, nome, hora) VALUE ('$telefone','$nome','$hora')";
         $query = mysqli_query($this->conn, $cmd);
     }
 
@@ -61,21 +54,21 @@ class ConexaoMySQL{
         $query = mysqli_query($this->conn,$cmd);
 
         if(mysqli_num_rows($query)>0){
-            $row =mysqli_fetch_assoc($query);
-            $status = $row['status'];
+            $res =mysqli_fetch_assoc($query);
+            $status = $res['status'];
         }
         return $status;
     }
-    // ===== CONSULTA OPCAO1 ===== //
-    public function consultaOpcao1($telefone){
+    // ===== CONSULTA OPCAO ===== //
+    public function consultaOpcao($telefone){
         $cmd = "SELECT * FROM cliente WHERE telefone= '$telefone'";
         $query = mysqli_query($this->conn,$cmd);
 
         if(mysqli_num_rows($query)>0){
-            $row =mysqli_fetch_assoc($query);
-            $opcao1 = $row['opcao1'];
+            $res =mysqli_fetch_assoc($query);
+            $opcao = $res['opcao'];
         }
-        return $opcao1;
+        return $opcao;
     }
     // ===== CONSULTA NOME ===== //
     public function consultaNome($telefone){
@@ -83,33 +76,32 @@ class ConexaoMySQL{
         $query = mysqli_query($this->conn,$cmd);
 
         if(mysqli_num_rows($query)>0){
-            $row =mysqli_fetch_assoc($query);
-            $nome = $row['nome'];
+            $res = mysqli_fetch_assoc($query);
+            $nome = $res['nome'];
         }
         return $nome;
     }
-    // ===== CONSULTA SEQUENCIA ===== //
-    public function consultaSequencia($telefone){
-        $cmd = "SELECT * FROM cliente WHERE telefone= '$telefone'";
-        $query = mysqli_query($this->conn,$cmd);
-
-        if(mysqli_num_rows($query)>0){
-            $row =mysqli_fetch_assoc($query);
-            $sequencia = $row['sequencia'];
-        }
-        return $sequencia;
-    }
-
+    // ===== CONSULTA FILA ===== //
     public function consultaFila(){
         $cmd = "SELECT * FROM fila";
         $query = mysqli_query($this->conn,$cmd);
 
         if(mysqli_num_rows($query)>0){
-
-            return "O tamanho da fila é: " . mysqli_num_rows($query). "\nDigite 1 e garanta sua vaga";
-            
+            while ($res = mysqli_fetch_assoc($query)){
+                $fila[] = $res['nome'];
+            }
+            $fila_str = '';
+                foreach ($fila as $str){
+                    $fila_str .= $str." -> ";
+                }
+            $fila = array(
+                "qtd" => mysqli_num_rows($query),
+                "pessoas" => $fila_str
+            );
+            $tempo_espera = $fila['qtd']*25;
+            return "Há ".$fila['qtd']." pessoas na sua frente. \n".$fila['pessoas']."\nO tempo de espera é: ".$tempo_espera." minutos";
         }else {
-            return "O tamanho da fila é: " . mysqli_num_rows($query). "\nDigite 1 e venha correndo...";
+            return "Não há ninguem na fila. \nDigite 1 e venha correndo...";
     }
 }
 
@@ -134,19 +126,9 @@ class ConexaoMySQL{
             return false; // Falha na atualização
         }
     }
-    // ===== ATUALIZA OPÇAO1 ===== //  
-    public function atualizaOpcao1($telefone,$opcao1){
-        $cmd = "UPDATE cliente SET opcao1 = $opcao1  WHERE telefone = '$telefone'";
-        $query = mysqli_query($this->conn,$cmd);
-        if ($query) {
-            return true; // Atualização bem-sucedida
-        } else {
-            return false; // Falha na atualização
-        }
-    }
-    // ===== ATUALIZA SEQUENCIA ===== //  
-    public function atualizaSequencia($telefone,$sequencia){
-        $cmd = "UPDATE cliente SET sequencia = $sequencia  WHERE telefone = '$telefone'";
+    // ===== ATUALIZA OPÇAO ===== //  
+    public function atualizaOpcao($telefone,$opcao){
+        $cmd = "UPDATE cliente SET opcao = $opcao  WHERE telefone = '$telefone'";
         $query = mysqli_query($this->conn,$cmd);
         if ($query) {
             return true; // Atualização bem-sucedida

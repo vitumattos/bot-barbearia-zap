@@ -20,7 +20,7 @@ load_dotenv()
 # BASE_DIR = os.getcwd()
 BASE_DIR = Path(__file__).parent
 CHAVE_API = os.getenv('CHAVE_API')
-USER = 'vitor@gmail.com'
+USER = 'user@email.com'
 
 # ============ Configuração Básica ============ #
 chrome_options = Options()
@@ -100,5 +100,5 @@ def bot():
 
 # ============ Start ============ #
 while True:
-    sleep(5)
+    sleep(3)
     bot()
