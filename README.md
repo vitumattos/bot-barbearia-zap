@@ -19,8 +19,7 @@
 - [x] `Automação do Atendimento:` Receba mensagens dos clientes via WhatsApp Web, forneça respostas automáticas sobre **serviços, preços e agende compromissos.** Através de um menu personalizado por mensagens.
 - [x] `Cadastrar e Gerenciar clientes:` Registre novos clientes e armazene em um banco de dados MySQL, **garantindo persistência dos dados** e consistência das interações
 - [x] `Sistema de Fila:` Registre o cliente na fila e mostre o tempo médio de espera. ~~Marcar como atendido, adicionar, deletar e reorganizar a fila~~
-- [ ] `SUPERUSER:` Terá o acesso a funcionalidades avançadas de gerenciamento: Ver, adicione, remova e atualize registros dos clientes no sistema; Adicionar, deletar ou reorganizar a fila; Acesso a algumas funcinalidades de análise de dados; Personalize algumas respostas automáticas; Suporte, Manutenção e sugestões.
-
+- [x] `SUPERUSER:` Terá o acesso a funcionalidades avançadas de gerenciamento: Ver, adicione, remova e atualize registros dos clientes no sistema; Adicionar, deletar ou reorganizar a fila; Acesso a ~~algumas funcinalidades de análise de dados; Personalize algumas respostas automáticas; Suporte, Manutenção e sugestões.~~
 - [ ] `Envio de MSG quando att a fila:` ...
 
 - [ ] `Anti-Spam:` ...

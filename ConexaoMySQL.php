@@ -17,11 +17,9 @@ class ConexaoMySQL{
     }
     // *********************** METODOS DE CADASTROS *********************** //
     // ===== REGISTRAR CLIENTE NOVO ===== //
-    public function cadastroCliente($telefone,$nome,$status,$data_cadastro,$opcao){
-       
-        $cmd = "INSERT INTO cliente (telefone,nome,status,data_cadastro,opcao) VALUE ('$telefone','$nome','$status','$data_cadastro','$opcao')";
+    public function cadastroCliente($telefone,$nome,$status,$data_cadastro,$opcao, $opcao_adm){
+        $cmd = "INSERT INTO cliente (telefone,nome,status,data_cadastro,opcao,opcao_adm) VALUE ('$telefone','$nome','$status','$data_cadastro','$opcao','$opcao_adm')";
         $query = mysqli_query($this->conn, $cmd);
-
     }
     // ===== REGISTRA CONVERSA ===== //
     public function registraConversa($telefone,$msg_cliente,$msg_bot,$dia,$hora){
@@ -33,6 +31,12 @@ class ConexaoMySQL{
         $cmd = "INSERT INTO fila (telefone, nome, hora) VALUE ('$telefone','$nome','$hora')";
         $query = mysqli_query($this->conn, $cmd);
     }
+    // ===== REGISTRA CORTE ===== //
+    public function registraCorte($telefone,$dia,$hora){
+        $cmd = "INSERT INTO historico_corte (telefone, dia, hora) VALUE ('$telefone','$dia','$hora')";
+        $query = mysqli_query($this->conn, $cmd);
+    }
+
 
 // *********************** METODOS DE CONSULTA *********************** //
     // ===== CONSULTA TELEFONE ===== //
@@ -70,45 +74,75 @@ class ConexaoMySQL{
         }
         return $opcao;
     }
-    // ===== CONSULTA NOME ===== //
-    public function consultaNome($telefone){
-        $cmd = "SELECT * FROM cliente WHERE telefone= '$telefone'";
+
+    // ===== CONSULTA OPCAO_ADM ===== //
+    public function consultaOpcaoADM($telefone){
+        $cmd = "SELECT opcao_adm FROM cliente WHERE telefone= '$telefone'";
         $query = mysqli_query($this->conn,$cmd);
 
-        if(mysqli_num_rows($query)>0){
+        if($query){
+            $res =mysqli_fetch_assoc($query);
+            $opcao = $res['opcao_adm'];
+        }
+        return $opcao;
+    }
+    // ===== CONSULTA NOME ===== //
+    public function consultaNome($telefone){
+        $cmd = "SELECT nome FROM cliente WHERE telefone= '$telefone'";
+        $query = mysqli_query($this->conn,$cmd);
+
+        if($query){
             $res = mysqli_fetch_assoc($query);
             $nome = $res['nome'];
         }
         return $nome;
+    }
+    // ===== CONSULTA CLIENTES ===== //
+    public function consultaClientes(){
+        $cmd = "SELECT telefone, nome,status FROM cliente";
+        $query = mysqli_query($this->conn,$cmd);
+
+        if($query){
+            $clientes = array();
+            while ($cliente = mysqli_fetch_assoc($query)){
+                $clientes[] = $cliente;
+            }
+            return $clientes;
+        } else {
+            return array();
+        }
     }
     // ===== CONSULTA FILA ===== //
     public function consultaFila(){
         $cmd = "SELECT * FROM fila";
         $query = mysqli_query($this->conn,$cmd);
 
-        if(mysqli_num_rows($query)>0){
+        if($query){
+            $fila = array();
+            $clientes = array();
+            $telefones = array();
             while ($res = mysqli_fetch_assoc($query)){
-                $fila[] = $res['nome'];
+                $clientes[] = $res['nome'];
+                $telefones[] = $res['telefone'];
             }
-            $fila_str = '';
-                foreach ($fila as $str){
-                    $fila_str .= $str." -> ";
-                }
-            $fila = array(
-                "qtd" => mysqli_num_rows($query),
-                "pessoas" => $fila_str
-            );
-            $tempo_espera = $fila['qtd']*25;
-            return "Há ".$fila['qtd']." pessoas na sua frente. \n".$fila['pessoas']."\nO tempo de espera é: ".$tempo_espera." minutos";
+           
+            $fila['qtd'] = count($clientes);
+            $fila['nome'] = $clientes;
+            $fila['telefone'] = $telefones;
         }else {
-            return "Não há ninguem na fila. \nDigite 1 e venha correndo...";
+            $fila = array(
+                "qtd" => 0,
+                "nome" => array(),
+                "telefone" => array()
+            );
+        }
+        return $fila;
     }
-}
 
 // *********************** METODOS DE ATULIZAÇÃO *********************** //
     // ===== ATUALIZA NOME ===== //  
-    public function atualizaNome($telefone,$nome,$status){
-        $cmd = "UPDATE cliente SET nome = '$nome', status = $status  WHERE telefone = '$telefone'";
+    public function atualizaNome($telefone,$nome){
+        $cmd = "UPDATE cliente SET nome = '$nome' WHERE telefone = '$telefone'";
         $query = mysqli_query($this->conn,$cmd);
         if ($query) {
             return true; // Atualização bem-sucedida
@@ -118,7 +152,7 @@ class ConexaoMySQL{
     }
     // ===== ATUALIZA STATUS ===== //  
     public function atualizaStatus($telefone,$status){
-        $cmd = "UPDATE cliente SET status = $status  WHERE telefone = '$telefone'";
+        $cmd = "UPDATE cliente SET status = '$status ' WHERE telefone = '$telefone'";
         $query = mysqli_query($this->conn,$cmd);
         if ($query) {
             return true; // Atualização bem-sucedida
@@ -129,6 +163,27 @@ class ConexaoMySQL{
     // ===== ATUALIZA OPÇAO ===== //  
     public function atualizaOpcao($telefone,$opcao){
         $cmd = "UPDATE cliente SET opcao = $opcao  WHERE telefone = '$telefone'";
+        $query = mysqli_query($this->conn,$cmd);
+        if ($query) {
+            return true; // Atualização bem-sucedida
+        } else {
+            return false; // Falha na atualização
+        }
+    }
+    // ===== ATUALIZA OPÇAO_ADM ===== //  
+    public function atualizaOpcaoADM($telefone,$opcaoADM){
+        $cmd = "UPDATE cliente SET opcao_adm = '$opcaoADM'  WHERE telefone = '$telefone'";
+        $query = mysqli_query($this->conn,$cmd);
+        if ($query) {
+            return true; // Atualização bem-sucedida
+        } else {
+            return false; // Falha na atualização
+        }
+    }
+    // *********************** METODOS DE REMOÇÃO *********************** //
+    // ===== REMOVER FILA ===== //  
+    public function removeFila($telefone){
+        $cmd = "DELETE FROM fila WHERE telefone = '$telefone'";
         $query = mysqli_query($this->conn,$cmd);
         if ($query) {
             return true; // Atualização bem-sucedida
