@@ -30,12 +30,12 @@
             $u->atualizaNome($telefone,$nome);
             $u->atualizaStatus($telefone,"3");
 
-            $resposta = "É uma prazer falar com você $nome.\n$menu";
+            $resposta = json_encode(array("status"=>"1","case"=>"","menu"=>"principal","frase"=>"prazer","nome"=>$nome,"fila"=>""));
             $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);  
         }elseif($status == "2"){
             $u->atualizaStatus($telefone,'3');
             
-            $resposta = "Bem vindo, $nome.\n$menu";
+            $resposta = json_encode(array("status"=>"2","case"=>"","menu"=>"principal","frase"=>"bem-vindo","nome"=>$nome,"fila"=>""));
             $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);
         }elseif($status == "3"){
             $opcao = $msg;
@@ -47,32 +47,22 @@
             switch($opcao){
                 case "1":
                     $u->atualizaStatus($telefone,'4');
-                    $resposta = "$nome, $info\n". "Temos ". $fila['qtd']. " Pessoas na fila ainda $confirmacao";
+                    $resposta = json_encode(array("status"=>"3","case"=>"confirmacao","menu"=>"","frase"=>"info","nome"=>$nome,"fila"=>""));
                     $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);
                     break;
                 
                 case "2":
-                    if($fila['qtd']>0){
-                        $fila_str = '';
-                        $posicao = '1';
-                        foreach ($fila['nome'] as $str){
-                            $fila_str .= "$posicao.$str\n";
-                            $posicao +=1;
-                        }
-                        $resposta = "Há ".$fila['qtd']." pessoas na sua frente. \n".$fila_str;
-                    }else{
-                        $resposta = "Não há ninguem na fila. \nDigite 1 e venha correndo...";
-                    }
+                    $resposta = json_encode(array("status"=>"3","case"=>"fila","menu"=>"","frase"=>"","nome"=>"","fila"=>json_encode($fila)));
                     
                     $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);
                     break;
                 
                 case "3":
-                    $resposta = $tabela_preco;
+                    $resposta = json_encode(array("status"=>"3","case"=>"tabela","menu"=>"","frase"=>"","nome"=>"","fila"=>""));
                     $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);
                     break;
                 default:
-                $resposta = "$nome, poderia usar os índices das opções abaixo.\n".$menu;
+                    $resposta = json_encode(array("status"=>"3","case"=>"default","menu"=>"principal","frase"=>"Utilize os índices","nome"=>$nome,"fila"=>""));
                 $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);
                 }
         }elseif($status == "4"){
@@ -83,30 +73,32 @@
                 $u->atualizaOpcao($telefone,'0');
             }
             if($opcao == "1"){
-                $resposta = $entrou;
+                $resposta = json_encode(array("status"=>"4","case"=>"entrar","menu"=>"","frase"=>"","nome"=>$nome,"fila"=>""));
                 $u->atualizaStatus($telefone,"5");
                 $u->cadastraFila($telefone,$nome,$hora);
             }elseif($opcao == "2"){
-                $resposta = "Obrigado! Encerramos nossa conversa aqui";
+                $resposta = json_encode(array("status"=>"4","case"=>"encerrar","menu"=>"","frase"=>"","nome"=>$nome,"fila"=>""));
                 $u->atualizaStatus($telefone,"2");
                 $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);
             }else{
-                $resposta = "Não entendi, poderia usar os índices.\n". $confirmacao;
+                $resposta = json_encode(array("status"=>"4","case"=>"confirmacao","menu"=>"","frase"=>"nao entendi","nome"=>$nome,"fila"=>""));
+                
                 $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);
             }
         }elseif($status == "5"){
-            $resposta = "Você já está na fila.\nDigite: *Sair* p/ sair da fila";
+            $resposta = json_encode(array("status"=>"5","case"=>"","menu"=>"","frase"=>"","nome"=>$nome,"fila"=>$fila['qtd_fila']));
+
             $opcao = $msg;
 
             if($opcao == "Sair"){
                 $u->atualizaStatus($telefone,"2");
                 $u->removeFila($telefone);
-                $resposta = "$nome, desculpa qualquer coisa e espero que volte logo...";
+                $resposta = json_encode(array("status"=>"sair","case"=>"","menu"=>"","frase"=>"","nome"=>$nome,"fila"=>""));
             }
         // ===== SUPER USER ===== //
         }elseif($status == "99"){
             $u->atualizaStatus($telefone,'100');
-            $resposta = "Bem vindo, $nome.\n$menu_adm";
+            $resposta = json_encode(array("status"=>"99","case"=>"","menu"=>"admin","frase"=>"","nome"=>$nome,"fila"=>""));
         }elseif($status == "100"){
             $opcao = $msg;
             try{
@@ -117,55 +109,34 @@
             switch($opcao){
                 case "0":
                     $u->atualizaStatus($telefone,'99');
-                    $resposta = "Atendimentos encerrado, digite qualquer coisa para retomamos o atendimento.";
-                    
+                    $u->atualizaOpcaoADM($telefone,'0');
+                    $resposta = json_encode(array("status"=>"100","case"=>"0","menu"=>"","frase"=>"","nome"=>$nome,"fila"=>""));
                     break;
                 case "1":
                     $u->atualizaStatus($telefone,'101');
-                    if($fila['qtd']>0){
-                        $resposta = "Há ".$fila['qtd']." pessoas na fila.\n0. Voltar\n";
-                        foreach ($fila['nome'] as $posicao => $nome){
-                            $resposta .= ($posicao + 1) . ". *$nome* (".$fila['telefone'][$posicao].")\n";
-                        }
-                    }else{
-                        $resposta = "Não há ninguem na fila.\n0. Voltar";
-                    }
+                    $resposta = json_encode(array("status"=>"100","case"=>"1","menu"=>"","frase"=>"","nome"=>$nome,"fila"=>json_encode($fila)));
                     break;
                 case "2":
                     $u->atualizaStatus($telefone,"102");
-                    if (!empty($clientes)) {
-                        $resposta = "Lista de Clientes\n0. Voltar\n";
-                        $posicao = 1;
-                        foreach ($clientes as $cliente) {
-                            $resposta .= "$posicao. " . $cliente['nome']." (".$cliente['telefone'] . ")\n";
-                            $posicao+=1;
-                        }
-                    } else {
-                        $resposta = "Não há clientes cadastrados.";
-                    } 
+                    $resposta = json_encode(array("status"=>"100","case"=>"2","menu"=>"","frase"=>"","nome"=>$nome,"fila"=>json_encode($clientes)));
                     break;
                 default:
-                $resposta = "Não entendi, poderia utilizar os índices.\n $menu_adm";       
+                    $resposta = json_encode(array("status"=>"100","case"=>"default","menu"=>"admin","frase"=>"Utilize os índices","nome"=>$nome,"fila"=>""));
             }
         }elseif($status == "101"){
             $opcao = $msg;
             if($opcao == '0'){
                 $u->atualizaStatus($telefone,'100');
-                $resposta = $menu_adm;
-            }elseif($opcao <= $fila['qtd']){
+                $u->atualizaOpcaoADM($telefone,'0');
+                $resposta = json_encode(array("status"=>"101","case"=>"0","menu"=>"admin","frase"=>"","nome"=>$nome,"fila"=>""));
+            }elseif($opcao <= $fila['qtd_fila']){
                 $opcaoADM = $fila['telefone'][$msg-1];
                 $u->atualizaOpcaoADM($telefone,"$opcaoADM");
                 $u->atualizaStatus($telefone,'101.1');
-                $resposta = $opcaoADM."\n0 - *VOLTAR* \n1 - *CONCLUIR CORTE* \n2 - *REMOVER DA FILA*";
+                $resposta = json_encode(array("status"=>"101","case"=>"","menu"=>"admin_lista","frase"=>"$opcaoADM","nome"=>$nome,"fila"=>""));
             }else{
-                if($fila['qtd']>0){
-                    $resposta = "Útilize os índices. \n0. Voltar\n";
-                    foreach ($fila['nome'] as $posicao => $nome){
-                        $resposta .= ($posicao + 1) . ". *$nome* (".$fila['telefone'][$posicao].")\n";
-                    }
-                }else{
-                    $resposta = "Útilize os índices, não há ninguem na fila.\n 0. Voltar";
-                }
+                $resposta = json_encode(array("status"=>"100","case"=>"1","menu"=>"","frase"=>"out","nome"=>$nome,"fila"=>json_encode($fila)));
+
             }
         }elseif($status == "101.1"){
             $opcao = $msg;
@@ -176,33 +147,27 @@
             }
             switch($opcao){
                 case "0":
-                    $u->atualizaStatus($telefone,'101');
-                    if($fila['qtd']>0){
-                        $resposta = "0. Voltar\n";
-                        foreach ($fila['nome'] as $posicao => $nome){
-                            $resposta .= ($posicao + 1) . ". *$nome* (".$fila['telefone'][$posicao].")\n";
-                        }
-                    }else{
-                        $resposta = "Não há ninguem na fila.\n 0. Voltar";
-                    }
+                    $u->atualizaStatus($telefone,'100');
+                    $u->atualizaOpcaoADM($telefone,'0');
+                    $resposta = json_encode(array("status"=>"101.1","case"=>"0","menu"=>"admin","frase"=>"","nome"=>$nome,"fila"=>""));
                     break;
                 case "1":
                     $u->registraCorte($opcaoADM,$dia,$hora);
                     $u->removeFila("$opcaoADM");
                     $u->atualizaStatus($telefone,'100');
                     $u->atualizaStatus($opcaoADM,'2');
+                    $resposta = json_encode(array("status"=>"101.1","case"=>"concluido","menu"=>"admin","frase"=>"","nome"=>$opcaoADM,"fila"=>""));
                     $u->atualizaOpcaoADM($telefone,'0');
-                    $resposta = $menu_adm;
                     break;
                 case "2":
                     $u->removeFila("$opcaoADM");
                     $u->atualizaStatus($telefone,'100');
                     $u->atualizaStatus($opcaoADM,'2');
+                    $resposta = json_encode(array("status"=>"101.1","case"=>"REMOVIDO","menu"=>"admin","frase"=>"","nome"=>$opcaoADM,"fila"=>""));
                     $u->atualizaOpcaoADM($telefone,'0');
-                    $resposta = $menu_adm;
                     break;
                 default:
-                    $resposta = "Não entendi, poderia utilizar os índices.\n$opcaoADM\n0 - *VOLTAR* \n1 - *CONCLUIR CORTE* \n2 - *REMOVER DA FILA*";
+                $resposta = json_encode(array("status"=>"101.1","case"=>"out","menu"=>"admin_lista","frase"=>"$opcaoADM ","nome"=>$nome,"fila"=>""));
             }  
         }elseif($status == '102'){
             $opcao = $msg;
@@ -213,71 +178,52 @@
                 }
             if($opcao == '0'){
                 $u->atualizaStatus($telefone,'100');
-                $resposta = $menu_adm;
+                $resposta = json_encode(array("status"=>"102","case"=>"0","menu"=>"admin","frase"=>"","nome"=>$nome,"fila"=>""));
             }elseif($opcao <= count($clientes)){
                 $opcaoADM = $clientes[$msg-1]['telefone'];
                 $u->atualizaOpcaoADM($telefone,"$opcaoADM");
                 $u->atualizaStatus($telefone,'102.1');
-                $resposta = $clientes[$msg-1]['nome']." (".$clientes[$msg-1]['telefone'].") $configurar_cliente";
+                $resposta = json_encode(array("status"=>"102","case"=>"","menu"=>"admin_cliente","frase"=>"$opcaoADM ","nome"=>$nome,"fila"=>""));
             }else{
-                if(!empty($clientes)){
-                    $resposta = "*Útilize os índices*\nLista de Clientes:\n0. *Voltar*\n";
-                        $posicao = 1;
-                        foreach ($clientes as $cliente) {
-                            $resposta .= "$posicao. *" . $cliente['nome']."* (".$cliente['telefone'] . ")\n";
-                            $posicao+=1;
-                        }
-                }else{
-                    $resposta = "Útilize os índices, não há ninguem na fila.\n 0. Voltar";
-                }
+                $resposta = json_encode(array("status"=>"100","case"=>"2","menu"=>"","frase"=>"out ","nome"=>$nome,"fila"=>json_encode($clientes)));
             }  
         }elseif($status == '102.1'){
             $opcao = $msg;
             switch($opcao){
                 case "0":
-                    $u->atualizaStatus($telefone,'102');
-                    if (!empty($clientes)) {
-                        $resposta = "Lista de Clientes \n0. Voltar\n";
-                        $posicao = 1;
-                        foreach ($clientes as $cliente) {
-                            $resposta .= "$posicao. " . $cliente['nome']." (".$cliente['telefone'] . ")\n";
-                            $posicao+=1;
-                        }
-                    } else {
-                        $resposta = "Não há clientes cadastrados.";
-                    } 
+                    $u->atualizaStatus($telefone,'100');
+                    $resposta = json_encode(array("status"=>"102.1","case"=>"0","menu"=>"admin","frase"=>"","nome"=>$nome,"fila"=>""));
                     break;
                 case "1":
                     $nome = $u->consultaNome("$opcaoADM");
                     $u->cadastraFila("$opcaoADM",$nome,$hora);
                     $u->atualizaStatus($telefone,'100');
+                    $resposta = json_encode(array("status"=>"102.1","case"=>"add_fila","menu"=>"admin","frase"=>"","nome"=>$opcaoADM,"fila"=>""));
                     $u->atualizaOpcaoADM($telefone,'0');
-                    $resposta = $menu_adm;
                     break;
                 case "2":
                     $nome = $u->consultaNome("$opcaoADM");
                     $u->atualizaStatus($telefone,'102.2');
                     
-                    $resposta ="O novo nome de $nome será?";
+                    $resposta = json_encode(array("status"=>"102.1","case"=>"2","menu"=>"","frase"=>"","nome"=>$nome,"fila"=>""));
                     break;
                 default:
                     $nome = $u->consultaNome("$opcaoADM");
-                    $resposta ="Não entendi, poderia usar os índices.\n".$nome." (".$opcaoADM.") $configurar_cliente";
+                    $resposta = json_encode(array("status"=>"102.1","case"=>"out","menu"=>"admin","frase"=>"","nome"=>$nome,"fila"=>""));
                 }
         }elseif($status == "102.2"){
             $u->atualizaNome($opcaoADM,$msg);
             $u->atualizaStatus($telefone,'100');
             $u->atualizaOpcaoADM($telefone,'0');
 
-            $resposta = $menu_adm;
+            $resposta = json_encode(array("status"=>"102.2","case"=>"0","menu"=>"admin","frase"=>"","nome"=>$nome,"fila"=>""));
         }
         
     // PRIMEIRA VEZ DO CLIENTE
     }else{
         $u->cadastroCliente($telefone,'Cliente','1',$dia.' '.$hora,'','');
-        
-        // $resposta = $saudacao.$primerira_interacao;
-        $resposta = 'saudacao';
+
+        $resposta = json_encode(array("status"=>"primeira vez"));
         $u->registraConversa($telefone,$msg,$resposta,$dia,$hora);
     }
     echo $resposta

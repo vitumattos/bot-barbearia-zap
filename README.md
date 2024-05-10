@@ -4,29 +4,19 @@
 
 <h1 align="center">Whatsapp Bot p/ Barbearia</h1>
 <p align="center"><i
->Automatize sua barbearia com o Bot do WhatsApp: Agende, Consulte e Interaja!</i
+>Simplifique o atendimento sua barbearia com mensagens automáticas com um novo Bot de mensagens via WhatsApp</i
 ></p>
-
-<h4 align="center"> 
-    🚧 Projeto em construção 🚧
-</h4>
-
-# Descrição do projeto
-**Este projeto visa simplificar o atendimento ao cliente para barbearias, fornecendo uma solução automatizada e eficiente via WhatsApp.**
 
 # 🔨 Funcionalidades
 
-- [x] `Automação do Atendimento:` Receba mensagens dos clientes via WhatsApp Web, forneça respostas automáticas sobre **serviços, preços e agende compromissos.** Através de um menu personalizado por mensagens.
+- [x] `Automação do Atendimento:` Receba mensagens dos clientes via WhatsApp Web, forneça respostas automáticas sobre **tempo de espera, quantidade de pessoas na fila, preços, promoções e entre na fila.** Através de um menu personalizado por mensagens do zap.
 - [x] `Cadastrar e Gerenciar clientes:` Registre novos clientes e armazene em um banco de dados MySQL, **garantindo persistência dos dados** e consistência das interações
-- [x] `Sistema de Fila:` Registre o cliente na fila e mostre o tempo médio de espera. ~~Marcar como atendido, adicionar, deletar e reorganizar a fila~~
-- [x] `SUPERUSER:` Terá o acesso a funcionalidades avançadas de gerenciamento: Ver, adicione, remova e atualize registros dos clientes no sistema; Adicionar, deletar ou reorganizar a fila; Acesso a ~~algumas funcinalidades de análise de dados; Personalize algumas respostas automáticas; Suporte, Manutenção e sugestões.~~
-- [ ] `Envio de MSG quando att a fila:` ...
+- [x] `Sistema de Fila:` Registre o cliente na fila e mostre o tempo médio de espera.
+- [x] `SUPERUSER:` Acesso a funcionalidades avançadas de gerenciamento: Ver, adicione, remova e atualize registros dos clientes no sistema; Adicionar, deletar ou reorganizar a fila.
 
-- [ ] `Anti-Spam:` ...
+# 📐 Layout
 
-# Layout
-![Authentication](<./assets/layout.gif>)
-
+![Authentication](<./assets/layout (2).gif>)
 
 # 🛠️ Baixe e rode o projeto
 
@@ -52,7 +42,11 @@ $ python ./main.py
 
 ## ✔️ Técnicas e tecnologias utilizadas
 
-- ``Python``
-- ``selenium``
-- ``PHP``
-- ``MySQL``
+- `Python`
+- `Selenium`
+- `PHP`
+- `MySQL`
+
+##### 💬 Comentario do Dev (eu)
+
+> _No começo, pensei que seria só mais um desafio maneiro de Python e Selenium, mas conforme o projeto evoluía, percebi que precisava de um banco de dados para guardar algumas informações. Decidi usar PHP para separar a lógica da automação do zap, deixando o Python só na parte da frente._<br> >_Foi incrível pôr em prática meus conhecimentos de MySQL e aprender PHP enquanto desenvolvia o projeto. Desbravar tutoriais, mergulhar em documentações e já sair codando em uma nova linguagem dentro do projeto foi um desafio e tanto!_

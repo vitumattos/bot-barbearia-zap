@@ -126,7 +126,7 @@ class ConexaoMySQL{
                 $telefones[] = $res['telefone'];
             }
            
-            $fila['qtd'] = count($clientes);
+            $fila['qtd_fila'] = count($clientes);
             $fila['nome'] = $clientes;
             $fila['telefone'] = $telefones;
         }else {
@@ -152,7 +152,7 @@ class ConexaoMySQL{
     }
     // ===== ATUALIZA STATUS ===== //  
     public function atualizaStatus($telefone,$status){
-        $cmd = "UPDATE cliente SET status = '$status ' WHERE telefone = '$telefone'";
+        $cmd = "UPDATE cliente SET status = '$status' WHERE telefone = '$telefone'";
         $query = mysqli_query($this->conn,$cmd);
         if ($query) {
             return true; // Atualização bem-sucedida
