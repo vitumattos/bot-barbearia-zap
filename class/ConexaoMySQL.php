@@ -15,9 +15,33 @@ class ConexaoMySQL{
         }
         
     }
+    // ===== MÉTODO CRIAR TABELA ===== //
+    public function criarTabelaBD(){
+        $cmd = "CREATE TABLE IF NOT EXISTS `historico_conversa` (
+            `id` int(255) AUTO_INCREMENT PRIMARY KEY,
+            `telefone` varchar(255) NOT NULL,
+            `msg_cliente` varchar(255) NOT NULL,
+            `msg_bot` varchar(255) NOT NULL,
+            `dia` varchar(20) NOT NULL,
+            `hora` varchar(20) NOT NULL
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+        $query = mysqli_query($this->conn, $cmd);
+
+        $cmd = "CREATE TABLE IF NOT EXISTS `cliente` (
+            `id` int(11) AUTO_INCREMENT PRIMARY KEY,
+            `telefone` varchar(255) NOT NULL,
+            `nome` varchar(255) NOT NULL,
+            `status` varchar(255) NOT NULL,
+            `data_cadastro` varchar(255) NOT NULL,
+            `opcao` int(20) NOT NULL,
+            `opcao_adm` int(20) NOT NULL
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+        $query = mysqli_query($this->conn, $cmd);
+    }
+
     // *********************** METODOS DE CADASTROS *********************** //
     // ===== REGISTRAR CLIENTE NOVO ===== //
-    public function cadastroCliente($telefone,$nome,$status,$data_cadastro,$opcao, $opcao_adm){
+    public function cadastroCliente($telefone,$nome,$status,$data_cadastro,$opcao,$opcao_adm){
         $cmd = "INSERT INTO cliente (telefone,nome,status,data_cadastro,opcao,opcao_adm) VALUE ('$telefone','$nome','$status','$data_cadastro','$opcao','$opcao_adm')";
         $query = mysqli_query($this->conn, $cmd);
     }

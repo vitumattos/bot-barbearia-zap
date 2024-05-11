@@ -301,6 +301,7 @@ def bot():
 
 
 # ============ Start ============ #
-while True:
-    sleep(2)
-    bot()
+if __name__ == "__main__":
+    while True:
+        sleep(2)
+        bot()

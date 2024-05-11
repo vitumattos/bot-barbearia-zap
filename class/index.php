@@ -3,7 +3,7 @@
 
     try{
         $u = new ConexaoMySQL('localhost','root','','bot-barbearia-zap'); // instancia da classe ConexãoMYSQL
-        $u->criarTabelaBD();
+        $u->criarTabelaBD(); // criando as tabelas se não existir
     } catch(PDOException $e){
         echo 'Erro ao conectar ao banco de dados';
     }
