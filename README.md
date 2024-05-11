@@ -42,11 +42,11 @@ $ python ./main.py
 
 ## ✔️ Técnicas e tecnologias utilizadas
 
-- `Python`
-- `Selenium`
-- `PHP`
-- `MySQL`
+- `Python:` *Responsável por emular o whatsapp, captura de mensagem do usuário e responder para o cliente.*
+- `Selenium:` *Biblioteca do python p/ automação de tarefas*
+- `PHP:` *Responsável pelo processamento (inteligência dos serviços com um menu dinâmico).* 
+- `MySQL:` *Banco de dados responsável pela persistencia dos dados*
 
 ##### 💬 Comentario do Dev (eu)
 
-> _No começo, pensei que seria só mais um desafio maneiro de Python e Selenium, mas conforme o projeto evoluía, percebi que precisava de um banco de dados para guardar algumas informações. Decidi usar PHP para separar a lógica da automação do zap, deixando o Python só na parte da frente._<br> >_Foi incrível pôr em prática meus conhecimentos de MySQL e aprender PHP enquanto desenvolvia o projeto. Desbravar tutoriais, mergulhar em documentações e já sair codando em uma nova linguagem dentro do projeto foi um desafio e tanto!_
+> _No começo, pensei que seria só mais um desafio maneiro de Python e Selenium, mas conforme o projeto evoluía, percebi que precisava de um banco de dados para guardar algumas informações. Decidi usar PHP para separar a lógica da automação do zap, deixando o Python só na parte da frente._<br> _Foi incrível pôr em prática meus conhecimentos de MySQL e aprender PHP enquanto desenvolvia o projeto. Desbravar tutoriais, mergulhar em documentações e já sair codando em uma nova linguagem dentro do projeto foi um desafio e tanto!_
