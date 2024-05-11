@@ -292,10 +292,7 @@ def bot():
 
         elif resposta['status'] == '102.1' and resposta['case'] == '2':
             campo_de_texto.send_keys(f"Qual será o novo nome de {resposta['nome']}?",Keys.ENTER)
-
-
-
-
+            
         sleep(1)
         # FECHAR CONTATO
         webdriver.ActionChains(driver).send_keys(Keys.ESCAPE).perform()
